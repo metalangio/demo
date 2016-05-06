@@ -40,7 +40,7 @@ export default class App extends React.Component {
 
     if (query != "") {
       query = query.toUpperCase()
-      Axios.get('http://localhost:8080/word_search/' + '?query=' + query)
+      Axios.get('http://46.101.123.73:8080/word_search/' + '?query=' + query)
         .then(response => {
 
           let filteredWords = response.data.filter(wordObj => {

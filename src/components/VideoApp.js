@@ -20,7 +20,7 @@ export default class VideoApp extends React.Component {
 
     if (query != "") {
       query = query.toUpperCase()
-      Axios.get('http://localhost:8080/video_search/' + '?query=' + query)
+      Axios.get('http://46.101.123.73:8080/video_search/' + '?query=' + query)
         .then(response => {
           console.log("WORKING")
           console.log(response)
