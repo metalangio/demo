@@ -5,8 +5,6 @@ import ReactDOMServer from "react-dom/server"
 import { match, RoutingContext } from 'react-router'
 import routes from "./lib/routes"
 
-import model from "./lib/falcor/model"
-
 const app = express()
 
 app.use(express.static("static"))
@@ -51,5 +49,3 @@ app.listen(3000, err => {
 
   console.log("Server started on port 3000");
 })
-
-model.get(['pages', 0, "body"]).then(x => console.log(JSON.stringify(x.json)))

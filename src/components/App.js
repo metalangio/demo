@@ -59,10 +59,6 @@ export default class App extends React.Component {
   }
 
   render() {
-    let mainDiv = {
-      fontFamily: 'Noto Sans'
-    }
-
     let body = {
       display: 'flex',
       justifyContent: 'space-around'
@@ -105,7 +101,7 @@ export default class App extends React.Component {
     })
 
     return (
-      <div style={mainDiv}>
+      <div>
           <div style={description}>
             <p>MetaLang is a multi-language phonetic search engine. 
             For example, searching for "Mohammed" will match against "محمد" "Muhammed", "Mahamed", "Mohamed" because all the terms are phonetically the same! </p>
