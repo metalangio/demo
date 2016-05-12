@@ -46,11 +46,15 @@ export default class VideoApp extends React.Component {
   }
 
   componentDidMount() {
-    this.player = new YT.Player('video', {
-        width: 600,
-        height: 400,
-        videoId: 'Ks-_Mh1QhMc'
-    })
+    window.onYouTubeIframeAPIReady = () => {
+        console.log("YOUTUBE API READY")
+        console.log(this)
+        this.player = new YT.Player('video', {
+          width: 600,
+          height: 400,
+          videoId: 'Ks-_Mh1QhMc'
+        })
+    } 
   }
 
   render() {
