@@ -10,7 +10,7 @@ export default class VideoApp extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      listOfAnswers: [100, 200, 500]
+      listOfAnswers: []
     }
   }
 
