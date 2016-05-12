@@ -59,6 +59,15 @@ export default class App extends React.Component {
     event.preventDefault()
   }
 
+  componentWillUpdate() {
+    let answerTable = document.getElementById("listOfAnswers")
+    if (this.state.listOfAnswers.length > 0) {
+      answerTable.style.visibility = "visible"
+    } else {
+      answerTable.style.visibility = "hidden"
+    }
+  }
+
   render() {
     let body = {
       display: 'flex',
@@ -117,7 +126,7 @@ export default class App extends React.Component {
             <div>
               <h3>Query</h3>
               <SearchBar searchWordTrie={this.searchWordTrie.bind(this)}/>
-              <table className="pure-table" id="listOfAnswers" style={{marginTop:'20px'}}>
+              <table className="pure-table" id="listOfAnswers" style={{marginTop:'20px', visibility:'hidden'}}>
                 <thead>
                   <tr>
                     <th>ID</th>
@@ -127,7 +136,7 @@ export default class App extends React.Component {
                 <tbody>
                   {listOfAnswers}
                 </tbody>
-              </table>
+              </table>  
 
             </div>
             <div>
