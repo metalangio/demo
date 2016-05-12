@@ -4,6 +4,7 @@ import InputBar from "./InputBar"
 import Firebase from "firebase"
 import SearchBar from "./SearchBar"
 import Axios from "axios"
+import Main from "./Main"
 
 export default class App extends React.Component {
   constructor(props) {
@@ -102,6 +103,8 @@ export default class App extends React.Component {
 
     return (
       <div>
+      <Main />
+      <div>
           <div style={description}>
             <p>MetaLang is a multi-language phonetic search engine. 
             For example, searching for "Mohammed" will match against "محمد" "Muhammed", "Mahamed", "Mohamed" because all the terms are phonetically the same! </p>
@@ -145,6 +148,7 @@ export default class App extends React.Component {
             </div>
 
         </div>
+      </div>
       </div>
     )
   }

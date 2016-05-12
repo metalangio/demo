@@ -4,6 +4,7 @@ import InputBar from "./InputBar"
 import Firebase from "firebase"
 import SearchBar from "./SearchBar"
 import Axios from "axios"
+import Main from "./Main"
 
 export default class VideoApp extends React.Component {
   constructor(props) {
@@ -77,6 +78,8 @@ export default class VideoApp extends React.Component {
 
     return (
       <div>
+      <Main />
+      <div>
         <div style={description}>
           <p>MetaLang Video App searches through a video phonetically</p>
           <p>Instructions:</p>
@@ -96,6 +99,7 @@ export default class VideoApp extends React.Component {
             </div>
           </div>
         </div>
+      </div>
       </div>
     )
   }
