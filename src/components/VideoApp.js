@@ -10,7 +10,7 @@ export default class VideoApp extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      listOfAnswers: []
+      listOfAnswers: [100, 200, 500]
     }
   }
 
@@ -71,12 +71,14 @@ export default class VideoApp extends React.Component {
     }
 
     let answers = this.state.listOfAnswers.map((ans) => {
+      let minutes = Math.floor(ans / 60)
+      let seconds = ans % 60
       console.log(ans)
       let onClick = () => {
         this.player.seekTo(ans)
       }
       return (
-        <li onClick={onClick}>{ans}</li>
+        <li onClick={onClick}>{minutes}:{seconds}</li>
       )
     })
 
