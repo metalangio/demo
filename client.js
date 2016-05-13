@@ -26198,15 +26198,11 @@
 	          console.log(response);
 	
 	          var filteredWords = response.data.filter(function (wordObj) {
-	            console.log(1);
-	            console.log(wordObj);
-	            return wordObj.cost < 5;
+	            return wordObj.cost < 3;
 	          }).map(function (wordObj) {
-	            console.log(2);
-	            console.log(wordObj);
 	            return wordObj.wordId;
 	          });
-	          console.log(filteredWords);
+	          console.log("filteredWords:", filteredWords);
 	
 	          _this2.setState({
 	            listOfAnswers: filteredWords
@@ -26256,13 +26252,12 @@
 	      var answers = this.state.listOfAnswers.map(function (ans) {
 	        var minutes = Math.floor(ans / 60);
 	        var seconds = ans % 60;
-	        console.log(ans);
 	        var onClick = function onClick() {
 	          _this4.player.seekTo(ans);
 	        };
 	        return _react2.default.createElement(
 	          "li",
-	          { onClick: onClick },
+	          { onClick: onClick, style: { color: "blue", textDecoration: "underline" } },
 	          minutes,
 	          ":",
 	          seconds
