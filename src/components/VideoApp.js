@@ -45,15 +45,22 @@ export default class VideoApp extends React.Component {
 
   }
 
+  insertVideo() {
+    this.player = new YT.Player('video', {
+      width: 600,
+      height: 400,
+      videoId: 'Ks-_Mh1QhMc'
+    }) 
+  }
+
   componentDidMount() {
     window.onYouTubeIframeAPIReady = () => {
-        console.log("YOUTUBE API READY")
-        console.log(this)
-        this.player = new YT.Player('video', {
-          width: 600,
-          height: 400,
-          videoId: 'Ks-_Mh1QhMc'
-        })
+      console.log("YOUTUBE API READY")
+      this.insertVideo()
+    } 
+
+    if (typeof YT.Player == "function") {
+      this.insertVideo()
     } 
   }
 
@@ -100,7 +107,7 @@ export default class VideoApp extends React.Component {
               {answers}
             </ul>
           </div>
-          <div>
+          <div id="videoContainer">
             <div id="video">
             </div>
           </div>
