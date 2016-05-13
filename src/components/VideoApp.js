@@ -27,15 +27,11 @@ export default class VideoApp extends React.Component {
           console.log(response)
 
           let filteredWords = response.data.filter(wordObj => {
-            console.log(1)
-            console.log(wordObj)
-            return wordObj.cost < 5
+            return wordObj.cost < 3
           }).map(wordObj => {
-            console.log(2)
-            console.log(wordObj)
             return wordObj.wordId
           })
-          console.log(filteredWords)
+          console.log("filteredWords:", filteredWords)
 
           this.setState({
             listOfAnswers: filteredWords
@@ -80,12 +76,11 @@ export default class VideoApp extends React.Component {
     let answers = this.state.listOfAnswers.map((ans) => {
       let minutes = Math.floor(ans / 60)
       let seconds = ans % 60
-      console.log(ans)
       let onClick = () => {
         this.player.seekTo(ans)
       }
       return (
-        <li onClick={onClick}>{minutes}:{seconds}</li>
+        <li onClick={onClick} style={{color:"blue", textDecoration: "underline"}}>{minutes}:{seconds}</li>
       )
     })
 
