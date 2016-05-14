@@ -24230,13 +24230,13 @@
 	          { style: navigation },
 	          _react2.default.createElement(
 	            _reactRouter.Link,
-	            { style: link, to: '/video' },
-	            'Video Search'
+	            { style: link, to: '/text' },
+	            'Text Search'
 	          ),
 	          _react2.default.createElement(
 	            _reactRouter.Link,
-	            { style: link, to: '/text' },
-	            'Text Search'
+	            { style: link, to: '/video' },
+	            'Video Search'
 	          )
 	        ),
 	        _react2.default.createElement(
@@ -24291,10 +24291,6 @@
 	
 	var _Main2 = _interopRequireDefault(_Main);
 	
-	var _NoSearchResultText = __webpack_require__(213);
-	
-	var _NoSearchResultText2 = _interopRequireDefault(_NoSearchResultText);
-	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -24314,7 +24310,7 @@
 	    _this.firebaseRef = new _firebase2.default("https://word-search-demo.firebaseio.com/word_search");
 	    _this.state = {
 	      listOfIdsAndWords: {},
-	      searchResults: []
+	      listOfAnswers: []
 	    };
 	
 	    _this.firebaseRef.on("child_added", function (snapshot) {
@@ -24347,11 +24343,11 @@
 	    value: function searchWordTrie(event) {
 	      var _this3 = this;
 	
-	      this.query = document.getElementById("searchBar").value;
+	      var query = document.getElementById("searchBar").value;
 	
-	      if (this.query != "") {
-	        this.query = this.query.toUpperCase();
-	        _axios2.default.get('http://46.101.123.73:8080/word_search/' + '?query=' + this.query).then(function (response) {
+	      if (query != "") {
+	        query = query.toUpperCase();
+	        _axios2.default.get('http://46.101.123.73:8080/word_search/' + '?query=' + query).then(function (response) {
 	
 	          var filteredWords = response.data.filter(function (wordObj) {
 	            return wordObj.cost < 3;
@@ -24360,7 +24356,7 @@
 	          });
 	
 	          _this3.setState({
-	            searchResults: filteredWords
+	            listOfAnswers: filteredWords
 	          });
 	        });
 	      }
@@ -24370,14 +24366,11 @@
 	  }, {
 	    key: "componentWillUpdate",
 	    value: function componentWillUpdate() {
-	      var answerTable = document.getElementById("searchResults");
-	      var noSearchResultText = document.getElementById("NoSearchResult");
-	      if (this.state.searchResults.length > 0) {
+	      var answerTable = document.getElementById("listOfAnswers");
+	      if (this.state.listOfAnswers.length > 0) {
 	        answerTable.style.visibility = "visible";
-	        noSearchResultText.style.visibility = "hidden";
-	      } else if (this.query != undefined) {
+	      } else {
 	        answerTable.style.visibility = "hidden";
-	        noSearchResultText.style.visibility = "visible";
 	      }
 	    }
 	  }, {
@@ -24424,7 +24417,7 @@
 	        WordsAndIds[word] = id;
 	      });
 	
-	      var searchResults = this.state.searchResults.map(function (word) {
+	      var listOfAnswers = this.state.listOfAnswers.map(function (word) {
 	        var id = WordsAndIds[word];
 	        return _react2.default.createElement(
 	          "tr",
@@ -24485,10 +24478,9 @@
 	                "Query"
 	              ),
 	              _react2.default.createElement(_SearchBar2.default, { searchWordTrie: this.searchWordTrie.bind(this) }),
-	              _react2.default.createElement(_NoSearchResultText2.default, { query: this.query, style: { marginTop: '20px', visibility: 'hidden' } }),
 	              _react2.default.createElement(
 	                "table",
-	                { className: "pure-table", id: "searchResults", style: { marginTop: '20px', visibility: 'hidden' } },
+	                { className: "pure-table", id: "listOfAnswers", style: { marginTop: '20px', visibility: 'hidden' } },
 	                _react2.default.createElement(
 	                  "thead",
 	                  null,
@@ -24510,7 +24502,7 @@
 	                _react2.default.createElement(
 	                  "tbody",
 	                  null,
-	                  searchResults
+	                  listOfAnswers
 	                )
 	              )
 	            ),
@@ -24918,10 +24910,6 @@
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _NoSearchResultText = __webpack_require__(213);
-	
-	var _NoSearchResultText2 = _interopRequireDefault(_NoSearchResultText);
-	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -24944,7 +24932,7 @@
 	    value: function render() {
 	      return _react2.default.createElement(
 	        "div",
-	        { id: "searchBarContainer" },
+	        null,
 	        _react2.default.createElement(
 	          "form",
 	          { className: "pure-form", onSubmit: this.props.searchWordTrie },
@@ -24961,57 +24949,7 @@
 	exports.default = SearchBar;
 
 /***/ },
-/* 213 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-	
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-	
-	var _react = __webpack_require__(1);
-	
-	var _react2 = _interopRequireDefault(_react);
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-	
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-	
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-	
-	var NoSearchResultText = function (_React$Component) {
-	  _inherits(NoSearchResultText, _React$Component);
-	
-	  function NoSearchResultText() {
-	    _classCallCheck(this, NoSearchResultText);
-	
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(NoSearchResultText).apply(this, arguments));
-	  }
-	
-	  _createClass(NoSearchResultText, [{
-	    key: "render",
-	    value: function render() {
-	      return _react2.default.createElement(
-	        "p",
-	        { id: "NoSearchResult", style: { marginTop: '20px', visibility: 'hidden' } },
-	        "No Seach Result for: ",
-	        this.props.query,
-	        " "
-	      );
-	    }
-	  }]);
-	
-	  return NoSearchResultText;
-	}(_react2.default.Component);
-	
-	exports.default = NoSearchResultText;
-
-/***/ },
+/* 213 */,
 /* 214 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -26240,7 +26178,7 @@
 	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(VideoApp).call(this, props));
 	
 	    _this.state = {
-	      searchResults: [100, 200]
+	      listOfAnswers: []
 	    };
 	    return _this;
 	  }
@@ -26250,22 +26188,25 @@
 	    value: function searchWordTrie(event) {
 	      var _this2 = this;
 	
+	      console.log("INSIDEJ");
 	      event.preventDefault();
-	      this.query = document.getElementById("searchBar").value;
+	      var query = document.getElementById("searchBar").value;
 	
-	      this.setState({
-	        searchResults: []
-	      });
-	      if (this.query != "") {
-	        this.query = this.query.toUpperCase();
-	        _axios2.default.get('http://46.101.123.73:8080/video_search/' + '?query=' + this.query).then(function (response) {
+	      if (query != "") {
+	        query = query.toUpperCase();
+	        _axios2.default.get('http://46.101.123.73:8080/video_search/' + '?query=' + query).then(function (response) {
+	          console.log("WORKING");
+	          console.log(response);
+	
 	          var filteredWords = response.data.filter(function (wordObj) {
 	            return wordObj.cost < 3;
 	          }).map(function (wordObj) {
 	            return wordObj.wordId;
 	          });
+	          console.log("filteredWords:", filteredWords);
+	
 	          _this2.setState({
-	            searchResults: filteredWords
+	            listOfAnswers: filteredWords
 	          });
 	        });
 	      }
@@ -26294,31 +26235,6 @@
 	      }
 	    }
 	  }, {
-	    key: "componentWillUpdate",
-	    value: function componentWillUpdate() {
-	      console.log("componentWillUpdate");
-	      console.log("QUERY", this.query);
-	      console.log("this.state.searchResults.length", this.state.searchResults.length);
-	
-	      var searchBarContainer = document.getElementById("searchBarContainer");
-	
-	      if (this.state.searchResults.length > 0) {
-	        console.log("Remove");
-	        var noSearchResultText = document.getElementById("NoSearchResult");
-	        if (noSearchResultText != undefined) {
-	          noSearchResultText.parentNode.removeChild(noSearchResultText);
-	        }
-	      } else if (this.query != undefined) {
-	        console.log("ABC");
-	        var para = document.createElement("p");
-	        para.setAttribute("id", "NoSearchResult");
-	        var node = document.createTextNode("No search result for: " + this.query);
-	        para.appendChild(node);
-	
-	        searchBarContainer.parentNode.insertBefore(para, searchBarContainer.nextSibling);
-	      }
-	    }
-	  }, {
 	    key: "render",
 	    value: function render() {
 	      var _this4 = this;
@@ -26334,24 +26250,18 @@
 	        margin: 'auto'
 	      };
 	
-	      var answers = this.state.searchResults.map(function (ans) {
+	      var answers = this.state.listOfAnswers.map(function (ans) {
 	        var minutes = Math.floor(ans / 60);
 	        var seconds = ans % 60;
 	        var onClick = function onClick() {
 	          _this4.player.seekTo(ans);
-	          e.preventDefault();
 	        };
 	        return _react2.default.createElement(
 	          "li",
-	          null,
-	          " ",
-	          _react2.default.createElement(
-	            "a",
-	            { href: "#", onClick: onClick },
-	            minutes,
-	            ":",
-	            seconds
-	          )
+	          { onClick: onClick, style: { color: "blue", textDecoration: "underline" } },
+	          minutes,
+	          ":",
+	          seconds
 	        );
 	      });
 	
@@ -26397,7 +26307,7 @@
 	                { style: { marginTop: '0px' } },
 	                "Query"
 	              ),
-	              _react2.default.createElement(_SearchBar2.default, { searchWordTrie: this.searchWordTrie.bind(this), resultTimestamps: this.searchResults }),
+	              _react2.default.createElement(_SearchBar2.default, { searchWordTrie: this.searchWordTrie.bind(this) }),
 	              _react2.default.createElement(
 	                "ul",
 	                null,
