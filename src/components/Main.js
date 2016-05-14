@@ -26,8 +26,8 @@ export default class App extends React.Component {
       <div style={font}>
         <h2 style={title}>MetaLang phonetic search</h2>
         <div style={navigation}>
-          <Link style={link} to="/text">Text Search</Link>
           <Link style={link} to="/video">Video Search</Link>
+          <Link style={link} to="/text">Text Search</Link>
         </div>
         <div>
           {this.props.children}

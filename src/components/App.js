@@ -5,6 +5,7 @@ import Firebase from "firebase"
 import SearchBar from "./SearchBar"
 import Axios from "axios"
 import Main from "./Main"
+import NoSearchResultText from "./NoSearchResultText"
 
 export default class App extends React.Component {
   constructor(props) {
@@ -12,7 +13,7 @@ export default class App extends React.Component {
     this.firebaseRef = new Firebase("https://word-search-demo.firebaseio.com/word_search")
     this.state = {
       listOfIdsAndWords: {},
-      listOfAnswers: []
+      searchResults: []
     }
 
     this.firebaseRef.on("child_added", (snapshot) => {
@@ -37,11 +38,11 @@ export default class App extends React.Component {
   }
 
   searchWordTrie(event) {
-    let query = document.getElementById("searchBar").value
+    this.query = document.getElementById("searchBar").value
 
-    if (query != "") {
-      query = query.toUpperCase()
-      Axios.get('http://46.101.123.73:8080/word_search/' + '?query=' + query)
+    if (this.query != "") {
+      this.query = this.query.toUpperCase()
+      Axios.get('http://46.101.123.73:8080/word_search/' + '?query=' + this.query)
         .then(response => {
 
           let filteredWords = response.data.filter(wordObj => {
@@ -51,7 +52,7 @@ export default class App extends React.Component {
           })
 
           this.setState({
-            listOfAnswers: filteredWords
+            searchResults: filteredWords
           })
         })
     }
@@ -60,11 +61,14 @@ export default class App extends React.Component {
   }
 
   componentWillUpdate() {
-    let answerTable = document.getElementById("listOfAnswers")
-    if (this.state.listOfAnswers.length > 0) {
+    let answerTable = document.getElementById("searchResults")
+    let noSearchResultText = document.getElementById("NoSearchResult")
+    if (this.state.searchResults.length > 0) {
       answerTable.style.visibility = "visible"
-    } else {
+      noSearchResultText.style.visibility = "hidden"
+    } else if (this.query != undefined) {
       answerTable.style.visibility = "hidden"
+      noSearchResultText.style.visibility = "visible"
     }
   }
 
@@ -100,7 +104,7 @@ export default class App extends React.Component {
       WordsAndIds[word] = id 
     })
 
-    let listOfAnswers = this.state.listOfAnswers.map((word) => {
+    let searchResults = this.state.searchResults.map((word) => {
       let id = WordsAndIds[word]
       return(
         <tr>
@@ -126,7 +130,8 @@ export default class App extends React.Component {
             <div>
               <h3>Query</h3>
               <SearchBar searchWordTrie={this.searchWordTrie.bind(this)}/>
-              <table className="pure-table" id="listOfAnswers" style={{marginTop:'20px', visibility:'hidden'}}>
+              <NoSearchResultText query={this.query} style={{marginTop:'20px', visibility:'hidden'}}/>
+              <table className="pure-table" id="searchResults" style={{marginTop:'20px', visibility:'hidden'}}>
                 <thead>
                   <tr>
                     <th>ID</th>
@@ -134,7 +139,7 @@ export default class App extends React.Component {
                   </tr>
                 </thead>
                 <tbody>
-                  {listOfAnswers}
+                  {searchResults}
                 </tbody>
               </table>  
 

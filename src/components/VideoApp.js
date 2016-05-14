@@ -5,17 +5,17 @@ import Firebase from "firebase"
 import SearchBar from "./SearchBar"
 import Axios from "axios"
 import Main from "./Main"
+import NoSearchResultText from "./NoSearchResultText"
 
 export default class VideoApp extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      listOfAnswers: []
+      searchResults: []
     }
   }
 
   searchWordTrie(event) {
-    console.log("INSIDEJ")
     event.preventDefault()
     let query = document.getElementById("searchBar").value
 
@@ -23,18 +23,13 @@ export default class VideoApp extends React.Component {
       query = query.toUpperCase()
       Axios.get('http://46.101.123.73:8080/video_search/' + '?query=' + query)
         .then(response => {
-          console.log("WORKING")
-          console.log(response)
-
           let filteredWords = response.data.filter(wordObj => {
             return wordObj.cost < 3
           }).map(wordObj => {
             return wordObj.wordId
           })
-          console.log("filteredWords:", filteredWords)
-
           this.setState({
-            listOfAnswers: filteredWords
+            searchResults: filteredWords
           })
         })
     }
@@ -60,6 +55,25 @@ export default class VideoApp extends React.Component {
     } 
   }
 
+  componentWillUpdate() {
+    console.log("componentWillUpdate")
+    console.log("QUERY", this.query)
+    console.log("this.state.searchResults.length", this.state.searchResults.length)
+    let searchBarContainer = document.getElementById("searchBarContainer")
+    if (this.state.searchResults.length > 0) {
+      let noSearchResultText = document.getElementById("NoSearchResult")
+      if (NoSearchResult != undefined) {
+        noSearchResultText.parentNode.removeChild(noSearchResultText)
+      }
+    } else if (this.query != undefined) {
+      console.log("ABC")
+      searchBarContainer.parentNode.insertBefore(
+        <NoSearchResultText query={this.query} />,
+        searchBarContainer.nextSibling
+        )
+    }
+  }
+
   render() {
 
     let body = {
@@ -73,14 +87,15 @@ export default class VideoApp extends React.Component {
       margin: 'auto'
     }
 
-    let answers = this.state.listOfAnswers.map((ans) => {
+    let answers = this.state.searchResults.map((ans) => {
       let minutes = Math.floor(ans / 60)
       let seconds = ans % 60
       let onClick = () => {
         this.player.seekTo(ans)
+        e.preventDefault()
       }
       return (
-        <li onClick={onClick} style={{color:"blue", textDecoration: "underline"}}>{minutes}:{seconds}</li>
+        <li> <a href="#" onClick={onClick}>{minutes}:{seconds}</a></li>
       )
     })
 
@@ -97,7 +112,7 @@ export default class VideoApp extends React.Component {
         <div style={body}>
           <div>
             <h3 style={{marginTop:'0px'}}>Query</h3>
-            <SearchBar searchWordTrie={this.searchWordTrie.bind(this)}/>
+            <SearchBar searchWordTrie={this.searchWordTrie.bind(this)} resultTimestamps={this.searchResults}/>
             <ul>
               {answers}
             </ul>
