@@ -26223,10 +26223,6 @@
 	
 	var _Main2 = _interopRequireDefault(_Main);
 	
-	var _NoSearchResultText = __webpack_require__(213);
-	
-	var _NoSearchResultText2 = _interopRequireDefault(_NoSearchResultText);
-	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -26244,7 +26240,7 @@
 	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(VideoApp).call(this, props));
 	
 	    _this.state = {
-	      searchResults: []
+	      searchResults: [100, 200]
 	    };
 	    return _this;
 	  }
@@ -26254,23 +26250,20 @@
 	    value: function searchWordTrie(event) {
 	      var _this2 = this;
 	
-	      console.log("INSIDEJ");
 	      event.preventDefault();
-	      var query = document.getElementById("searchBar").value;
+	      this.query = document.getElementById("searchBar").value;
 	
-	      if (query != "") {
-	        query = query.toUpperCase();
-	        _axios2.default.get('http://46.101.123.73:8080/video_search/' + '?query=' + query).then(function (response) {
-	          console.log("WORKING");
-	          console.log(response);
-	
+	      this.setState({
+	        searchResults: []
+	      });
+	      if (this.query != "") {
+	        this.query = this.query.toUpperCase();
+	        _axios2.default.get('http://46.101.123.73:8080/video_search/' + '?query=' + this.query).then(function (response) {
 	          var filteredWords = response.data.filter(function (wordObj) {
 	            return wordObj.cost < 3;
 	          }).map(function (wordObj) {
 	            return wordObj.wordId;
 	          });
-	          console.log("filteredWords:", filteredWords);
-	
 	          _this2.setState({
 	            searchResults: filteredWords
 	          });
@@ -26304,15 +26297,25 @@
 	    key: "componentWillUpdate",
 	    value: function componentWillUpdate() {
 	      console.log("componentWillUpdate");
+	      console.log("QUERY", this.query);
+	      console.log("this.state.searchResults.length", this.state.searchResults.length);
+	
 	      var searchBarContainer = document.getElementById("searchBarContainer");
+	
 	      if (this.state.searchResults.length > 0) {
+	        console.log("Remove");
 	        var noSearchResultText = document.getElementById("NoSearchResult");
-	        if (NoSearchResult != undefined) {
+	        if (noSearchResultText != undefined) {
 	          noSearchResultText.parentNode.removeChild(noSearchResultText);
 	        }
 	      } else if (this.query != undefined) {
 	        console.log("ABC");
-	        searchBarContainer.parentNode.insertBefore(_react2.default.createElement(_NoSearchResultText2.default, { query: this.query }), searchBarContainer.nextSibling);
+	        var para = document.createElement("p");
+	        para.setAttribute("id", "NoSearchResult");
+	        var node = document.createTextNode("No search result for: " + this.query);
+	        para.appendChild(node);
+	
+	        searchBarContainer.parentNode.insertBefore(para, searchBarContainer.nextSibling);
 	      }
 	    }
 	  }, {
