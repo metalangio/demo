@@ -56,7 +56,7 @@
 	
 	var _routes2 = _interopRequireDefault(_routes);
 	
-	var _reactDom = __webpack_require__(232);
+	var _reactDom = __webpack_require__(233);
 	
 	var _reactDom2 = _interopRequireDefault(_reactDom);
 	
@@ -24138,7 +24138,7 @@
 	
 	var _App2 = _interopRequireDefault(_App);
 	
-	var _VideoApp = __webpack_require__(231);
+	var _VideoApp = __webpack_require__(232);
 	
 	var _VideoApp2 = _interopRequireDefault(_VideoApp);
 	
@@ -24230,13 +24230,13 @@
 	          { style: navigation },
 	          _react2.default.createElement(
 	            _reactRouter.Link,
-	            { style: link, to: '/text' },
-	            'Text Search'
+	            { style: link, to: '/video' },
+	            'Video Search'
 	          ),
 	          _react2.default.createElement(
 	            _reactRouter.Link,
-	            { style: link, to: '/video' },
-	            'Video Search'
+	            { style: link, to: '/text' },
+	            'Text Search'
 	          )
 	        ),
 	        _react2.default.createElement(
@@ -24283,13 +24283,17 @@
 	
 	var _SearchBar2 = _interopRequireDefault(_SearchBar);
 	
-	var _axios = __webpack_require__(213);
+	var _axios = __webpack_require__(214);
 	
 	var _axios2 = _interopRequireDefault(_axios);
 	
 	var _Main = __webpack_require__(208);
 	
 	var _Main2 = _interopRequireDefault(_Main);
+	
+	var _NoSearchResultText = __webpack_require__(213);
+	
+	var _NoSearchResultText2 = _interopRequireDefault(_NoSearchResultText);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
@@ -24310,7 +24314,7 @@
 	    _this.firebaseRef = new _firebase2.default("https://word-search-demo.firebaseio.com/word_search");
 	    _this.state = {
 	      listOfIdsAndWords: {},
-	      listOfAnswers: []
+	      searchResults: []
 	    };
 	
 	    _this.firebaseRef.on("child_added", function (snapshot) {
@@ -24343,11 +24347,11 @@
 	    value: function searchWordTrie(event) {
 	      var _this3 = this;
 	
-	      var query = document.getElementById("searchBar").value;
+	      this.query = document.getElementById("searchBar").value;
 	
-	      if (query != "") {
-	        query = query.toUpperCase();
-	        _axios2.default.get('http://46.101.123.73:8080/word_search/' + '?query=' + query).then(function (response) {
+	      if (this.query != "") {
+	        this.query = this.query.toUpperCase();
+	        _axios2.default.get('http://46.101.123.73:8080/word_search/' + '?query=' + this.query).then(function (response) {
 	
 	          var filteredWords = response.data.filter(function (wordObj) {
 	            return wordObj.cost < 3;
@@ -24356,7 +24360,7 @@
 	          });
 	
 	          _this3.setState({
-	            listOfAnswers: filteredWords
+	            searchResults: filteredWords
 	          });
 	        });
 	      }
@@ -24366,11 +24370,14 @@
 	  }, {
 	    key: "componentWillUpdate",
 	    value: function componentWillUpdate() {
-	      var answerTable = document.getElementById("listOfAnswers");
-	      if (this.state.listOfAnswers.length > 0) {
+	      var answerTable = document.getElementById("searchResults");
+	      var noSearchResultText = document.getElementById("NoSearchResult");
+	      if (this.state.searchResults.length > 0) {
 	        answerTable.style.visibility = "visible";
-	      } else {
+	        noSearchResultText.style.visibility = "hidden";
+	      } else if (this.query != undefined) {
 	        answerTable.style.visibility = "hidden";
+	        noSearchResultText.style.visibility = "visible";
 	      }
 	    }
 	  }, {
@@ -24417,7 +24424,7 @@
 	        WordsAndIds[word] = id;
 	      });
 	
-	      var listOfAnswers = this.state.listOfAnswers.map(function (word) {
+	      var searchResults = this.state.searchResults.map(function (word) {
 	        var id = WordsAndIds[word];
 	        return _react2.default.createElement(
 	          "tr",
@@ -24478,9 +24485,10 @@
 	                "Query"
 	              ),
 	              _react2.default.createElement(_SearchBar2.default, { searchWordTrie: this.searchWordTrie.bind(this) }),
+	              _react2.default.createElement(_NoSearchResultText2.default, { query: this.query, style: { marginTop: '20px', visibility: 'hidden' } }),
 	              _react2.default.createElement(
 	                "table",
-	                { className: "pure-table", id: "listOfAnswers", style: { marginTop: '20px', visibility: 'hidden' } },
+	                { className: "pure-table", id: "searchResults", style: { marginTop: '20px', visibility: 'hidden' } },
 	                _react2.default.createElement(
 	                  "thead",
 	                  null,
@@ -24502,7 +24510,7 @@
 	                _react2.default.createElement(
 	                  "tbody",
 	                  null,
-	                  listOfAnswers
+	                  searchResults
 	                )
 	              )
 	            ),
@@ -24910,6 +24918,10 @@
 	
 	var _react2 = _interopRequireDefault(_react);
 	
+	var _NoSearchResultText = __webpack_require__(213);
+	
+	var _NoSearchResultText2 = _interopRequireDefault(_NoSearchResultText);
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -24932,7 +24944,7 @@
 	    value: function render() {
 	      return _react2.default.createElement(
 	        "div",
-	        null,
+	        { id: "searchBarContainer" },
 	        _react2.default.createElement(
 	          "form",
 	          { className: "pure-form", onSubmit: this.props.searchWordTrie },
@@ -24952,22 +24964,73 @@
 /* 213 */
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = __webpack_require__(214);
+	"use strict";
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _react = __webpack_require__(1);
+	
+	var _react2 = _interopRequireDefault(_react);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var NoSearchResultText = function (_React$Component) {
+	  _inherits(NoSearchResultText, _React$Component);
+	
+	  function NoSearchResultText() {
+	    _classCallCheck(this, NoSearchResultText);
+	
+	    return _possibleConstructorReturn(this, Object.getPrototypeOf(NoSearchResultText).apply(this, arguments));
+	  }
+	
+	  _createClass(NoSearchResultText, [{
+	    key: "render",
+	    value: function render() {
+	      return _react2.default.createElement(
+	        "p",
+	        { id: "NoSearchResult", style: { marginTop: '20px', visibility: 'hidden' } },
+	        "No Seach Result for: ",
+	        this.props.query,
+	        " "
+	      );
+	    }
+	  }]);
+	
+	  return NoSearchResultText;
+	}(_react2.default.Component);
+	
+	exports.default = NoSearchResultText;
 
 /***/ },
 /* 214 */
 /***/ function(module, exports, __webpack_require__) {
 
+	module.exports = __webpack_require__(215);
+
+/***/ },
+/* 215 */
+/***/ function(module, exports, __webpack_require__) {
+
 	'use strict';
 	
-	var defaults = __webpack_require__(215);
-	var utils = __webpack_require__(216);
-	var dispatchRequest = __webpack_require__(217);
-	var InterceptorManager = __webpack_require__(226);
-	var isAbsoluteURL = __webpack_require__(227);
-	var combineURLs = __webpack_require__(228);
-	var bind = __webpack_require__(229);
-	var transformData = __webpack_require__(221);
+	var defaults = __webpack_require__(216);
+	var utils = __webpack_require__(217);
+	var dispatchRequest = __webpack_require__(218);
+	var InterceptorManager = __webpack_require__(227);
+	var isAbsoluteURL = __webpack_require__(228);
+	var combineURLs = __webpack_require__(229);
+	var bind = __webpack_require__(230);
+	var transformData = __webpack_require__(222);
 	
 	function Axios(defaultConfig) {
 	  this.defaults = utils.merge({}, defaultConfig);
@@ -25052,7 +25115,7 @@
 	axios.all = function all(promises) {
 	  return Promise.all(promises);
 	};
-	axios.spread = __webpack_require__(230);
+	axios.spread = __webpack_require__(231);
 	
 	// Provide aliases for supported request methods
 	utils.forEach(['delete', 'get', 'head'], function forEachMethodNoData(method) {
@@ -25080,12 +25143,12 @@
 
 
 /***/ },
-/* 215 */
+/* 216 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var utils = __webpack_require__(216);
+	var utils = __webpack_require__(217);
 	
 	var PROTECTION_PREFIX = /^\)\]\}',?\n/;
 	var DEFAULT_CONTENT_TYPE = {
@@ -25152,7 +25215,7 @@
 
 
 /***/ },
-/* 216 */
+/* 217 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -25424,7 +25487,7 @@
 
 
 /***/ },
-/* 217 */
+/* 218 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -25446,10 +25509,10 @@
 	        adapter = config.adapter;
 	      } else if (typeof XMLHttpRequest !== 'undefined') {
 	        // For browsers use XHR adapter
-	        adapter = __webpack_require__(218);
+	        adapter = __webpack_require__(219);
 	      } else if (typeof process !== 'undefined') {
 	        // For node use HTTP adapter
-	        adapter = __webpack_require__(218);
+	        adapter = __webpack_require__(219);
 	      }
 	
 	      if (typeof adapter === 'function') {
@@ -25465,18 +25528,18 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)))
 
 /***/ },
-/* 218 */
+/* 219 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
 	
-	var utils = __webpack_require__(216);
-	var buildURL = __webpack_require__(219);
-	var parseHeaders = __webpack_require__(220);
-	var transformData = __webpack_require__(221);
-	var isURLSameOrigin = __webpack_require__(222);
-	var btoa = (typeof window !== 'undefined' && window.btoa) || __webpack_require__(223);
-	var settle = __webpack_require__(224);
+	var utils = __webpack_require__(217);
+	var buildURL = __webpack_require__(220);
+	var parseHeaders = __webpack_require__(221);
+	var transformData = __webpack_require__(222);
+	var isURLSameOrigin = __webpack_require__(223);
+	var btoa = (typeof window !== 'undefined' && window.btoa) || __webpack_require__(224);
+	var settle = __webpack_require__(225);
 	
 	module.exports = function xhrAdapter(resolve, reject, config) {
 	  var requestData = config.data;
@@ -25575,7 +25638,7 @@
 	  // This is only done if running in a standard browser environment.
 	  // Specifically not if we're in a web worker, or react-native.
 	  if (utils.isStandardBrowserEnv()) {
-	    var cookies = __webpack_require__(225);
+	    var cookies = __webpack_require__(226);
 	
 	    // Add xsrf header
 	    var xsrfValue = config.withCredentials || isURLSameOrigin(config.url) ?
@@ -25636,12 +25699,12 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)))
 
 /***/ },
-/* 219 */
+/* 220 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var utils = __webpack_require__(216);
+	var utils = __webpack_require__(217);
 	
 	function encode(val) {
 	  return encodeURIComponent(val).
@@ -25709,12 +25772,12 @@
 
 
 /***/ },
-/* 220 */
+/* 221 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var utils = __webpack_require__(216);
+	var utils = __webpack_require__(217);
 	
 	/**
 	 * Parse headers into an object
@@ -25752,12 +25815,12 @@
 
 
 /***/ },
-/* 221 */
+/* 222 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var utils = __webpack_require__(216);
+	var utils = __webpack_require__(217);
 	
 	/**
 	 * Transform the data for a request or a response
@@ -25778,12 +25841,12 @@
 
 
 /***/ },
-/* 222 */
+/* 223 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var utils = __webpack_require__(216);
+	var utils = __webpack_require__(217);
 	
 	module.exports = (
 	  utils.isStandardBrowserEnv() ?
@@ -25852,7 +25915,7 @@
 
 
 /***/ },
-/* 223 */
+/* 224 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -25894,7 +25957,7 @@
 
 
 /***/ },
-/* 224 */
+/* 225 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -25918,12 +25981,12 @@
 
 
 /***/ },
-/* 225 */
+/* 226 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var utils = __webpack_require__(216);
+	var utils = __webpack_require__(217);
 	
 	module.exports = (
 	  utils.isStandardBrowserEnv() ?
@@ -25977,12 +26040,12 @@
 
 
 /***/ },
-/* 226 */
+/* 227 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var utils = __webpack_require__(216);
+	var utils = __webpack_require__(217);
 	
 	function InterceptorManager() {
 	  this.handlers = [];
@@ -26035,7 +26098,7 @@
 
 
 /***/ },
-/* 227 */
+/* 228 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -26055,7 +26118,7 @@
 
 
 /***/ },
-/* 228 */
+/* 229 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -26073,7 +26136,7 @@
 
 
 /***/ },
-/* 229 */
+/* 230 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -26090,7 +26153,7 @@
 
 
 /***/ },
-/* 230 */
+/* 231 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -26123,7 +26186,7 @@
 
 
 /***/ },
-/* 231 */
+/* 232 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -26152,13 +26215,17 @@
 	
 	var _SearchBar2 = _interopRequireDefault(_SearchBar);
 	
-	var _axios = __webpack_require__(213);
+	var _axios = __webpack_require__(214);
 	
 	var _axios2 = _interopRequireDefault(_axios);
 	
 	var _Main = __webpack_require__(208);
 	
 	var _Main2 = _interopRequireDefault(_Main);
+	
+	var _NoSearchResultText = __webpack_require__(213);
+	
+	var _NoSearchResultText2 = _interopRequireDefault(_NoSearchResultText);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
@@ -26177,7 +26244,7 @@
 	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(VideoApp).call(this, props));
 	
 	    _this.state = {
-	      listOfAnswers: []
+	      searchResults: []
 	    };
 	    return _this;
 	  }
@@ -26205,7 +26272,7 @@
 	          console.log("filteredWords:", filteredWords);
 	
 	          _this2.setState({
-	            listOfAnswers: filteredWords
+	            searchResults: filteredWords
 	          });
 	        });
 	      }
@@ -26234,6 +26301,21 @@
 	      }
 	    }
 	  }, {
+	    key: "componentWillUpdate",
+	    value: function componentWillUpdate() {
+	      console.log("componentWillUpdate");
+	      var searchBarContainer = document.getElementById("searchBarContainer");
+	      if (this.state.searchResults.length > 0) {
+	        var noSearchResultText = document.getElementById("NoSearchResult");
+	        if (NoSearchResult != undefined) {
+	          noSearchResultText.parentNode.removeChild(noSearchResultText);
+	        }
+	      } else if (this.query != undefined) {
+	        console.log("ABC");
+	        searchBarContainer.parentNode.insertBefore(_react2.default.createElement(_NoSearchResultText2.default, { query: this.query }), searchBarContainer.nextSibling);
+	      }
+	    }
+	  }, {
 	    key: "render",
 	    value: function render() {
 	      var _this4 = this;
@@ -26249,18 +26331,24 @@
 	        margin: 'auto'
 	      };
 	
-	      var answers = this.state.listOfAnswers.map(function (ans) {
+	      var answers = this.state.searchResults.map(function (ans) {
 	        var minutes = Math.floor(ans / 60);
 	        var seconds = ans % 60;
 	        var onClick = function onClick() {
 	          _this4.player.seekTo(ans);
+	          e.preventDefault();
 	        };
 	        return _react2.default.createElement(
 	          "li",
-	          { onClick: onClick, style: { color: "blue", textDecoration: "underline" } },
-	          minutes,
-	          ":",
-	          seconds
+	          null,
+	          " ",
+	          _react2.default.createElement(
+	            "a",
+	            { href: "#", onClick: onClick },
+	            minutes,
+	            ":",
+	            seconds
+	          )
 	        );
 	      });
 	
@@ -26306,7 +26394,7 @@
 	                { style: { marginTop: '0px' } },
 	                "Query"
 	              ),
-	              _react2.default.createElement(_SearchBar2.default, { searchWordTrie: this.searchWordTrie.bind(this) }),
+	              _react2.default.createElement(_SearchBar2.default, { searchWordTrie: this.searchWordTrie.bind(this), resultTimestamps: this.searchResults }),
 	              _react2.default.createElement(
 	                "ul",
 	                null,
@@ -26330,7 +26418,7 @@
 	exports.default = VideoApp;
 
 /***/ },
-/* 232 */
+/* 233 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
