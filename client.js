@@ -56,7 +56,7 @@
 	
 	var _routes2 = _interopRequireDefault(_routes);
 	
-	var _reactDom = __webpack_require__(233);
+	var _reactDom = __webpack_require__(234);
 	
 	var _reactDom2 = _interopRequireDefault(_reactDom);
 	
@@ -24134,13 +24134,13 @@
 	
 	var _Main2 = _interopRequireDefault(_Main);
 	
-	var _App = __webpack_require__(209);
+	var _TextSearchApp = __webpack_require__(209);
 	
-	var _App2 = _interopRequireDefault(_App);
+	var _TextSearchApp2 = _interopRequireDefault(_TextSearchApp);
 	
-	var _VideoApp = __webpack_require__(232);
+	var _VideoSearchApp = __webpack_require__(233);
 	
-	var _VideoApp2 = _interopRequireDefault(_VideoApp);
+	var _VideoSearchApp2 = _interopRequireDefault(_VideoSearchApp);
 	
 	var _react = __webpack_require__(1);
 	
@@ -24155,8 +24155,8 @@
 	  _react2.default.createElement(
 	    _reactRouter.Route,
 	    { path: "/" },
-	    _react2.default.createElement(_reactRouter.Route, { path: "text", component: _App2.default }),
-	    _react2.default.createElement(_reactRouter.Route, { path: "video", component: _VideoApp2.default })
+	    _react2.default.createElement(_reactRouter.Route, { path: "text", component: _TextSearchApp2.default }),
+	    _react2.default.createElement(_reactRouter.Route, { path: "video", component: _VideoSearchApp2.default })
 	  )
 	);
 
@@ -24217,26 +24217,30 @@
 	        margin: '10px'
 	      };
 	
+	      var demoType = this.props.demoType;
+	
 	      return _react2.default.createElement(
 	        'div',
 	        { style: font },
 	        _react2.default.createElement(
 	          'h2',
 	          { style: title },
-	          'MetaLang phonetic search'
+	          'MetaLang phonetic ',
+	          demoType,
+	          ' search'
 	        ),
 	        _react2.default.createElement(
 	          'div',
 	          { style: navigation },
 	          _react2.default.createElement(
 	            _reactRouter.Link,
-	            { style: link, to: '/text' },
-	            'Text Search'
+	            { style: link, to: '/video' },
+	            'Video Search'
 	          ),
 	          _react2.default.createElement(
 	            _reactRouter.Link,
-	            { style: link, to: '/video' },
-	            'Video Search'
+	            { style: link, to: '/text' },
+	            'Text Search'
 	          )
 	        ),
 	        _react2.default.createElement(
@@ -24283,13 +24287,21 @@
 	
 	var _SearchBar2 = _interopRequireDefault(_SearchBar);
 	
-	var _axios = __webpack_require__(214);
+	var _axios = __webpack_require__(213);
 	
 	var _axios2 = _interopRequireDefault(_axios);
 	
 	var _Main = __webpack_require__(208);
 	
 	var _Main2 = _interopRequireDefault(_Main);
+	
+	var _NoSearchResult = __webpack_require__(231);
+	
+	var _NoSearchResult2 = _interopRequireDefault(_NoSearchResult);
+	
+	var _SearchingStatus = __webpack_require__(232);
+	
+	var _SearchingStatus2 = _interopRequireDefault(_SearchingStatus);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
@@ -24310,7 +24322,8 @@
 	    _this.firebaseRef = new _firebase2.default("https://word-search-demo.firebaseio.com/word_search");
 	    _this.state = {
 	      listOfIdsAndWords: {},
-	      listOfAnswers: []
+	      listOfAnswers: [],
+	      searching: false
 	    };
 	
 	    _this.firebaseRef.on("child_added", function (snapshot) {
@@ -24343,12 +24356,12 @@
 	    value: function searchWordTrie(event) {
 	      var _this3 = this;
 	
-	      var query = document.getElementById("searchBar").value;
+	      this.query = document.getElementById("searchBar").value;
+	      this.setState({ searching: true });
 	
-	      if (query != "") {
-	        query = query.toUpperCase();
-	        _axios2.default.get('http://46.101.123.73:8080/word_search/' + '?query=' + query).then(function (response) {
+	      if (this.query != "") {
 	
+	        _axios2.default.get('http://46.101.123.73:8080/word_search/' + '?query=' + this.query.toUpperCase()).then(function (response) {
 	          var filteredWords = response.data.filter(function (wordObj) {
 	            return wordObj.cost < 3;
 	          }).map(function (wordObj) {
@@ -24356,21 +24369,45 @@
 	          });
 	
 	          _this3.setState({
+	            searching: false,
 	            listOfAnswers: filteredWords
 	          });
+	        }).catch(function (reponse) {
+	          _this3.setState({
+	            searching: false,
+	            listOfAnswers: []
+	          });
+	          console.log(response);
+	        });
+	      } else {
+	        this.setState({
+	          searching: false,
+	          listOfAnswers: []
 	        });
 	      }
 	
 	      event.preventDefault();
 	    }
 	  }, {
-	    key: "componentWillUpdate",
-	    value: function componentWillUpdate() {
+	    key: "componentDidUpdate",
+	    value: function componentDidUpdate() {
 	      var answerTable = document.getElementById("listOfAnswers");
 	      if (this.state.listOfAnswers.length > 0) {
 	        answerTable.style.visibility = "visible";
 	      } else {
 	        answerTable.style.visibility = "hidden";
+	      }
+	
+	      var searchingNode = document.getElementById("searchingStatus");
+	      var noResultNode = document.getElementById("noSearchResult");
+	      var listOfAnswersNode = document.getElementById("listOfAnswers");
+	      var parentNode = searchingNode.parentNode;
+	      if (this.state.searching == true) {
+	        searchingNode.parentNode.insertBefore(searchingNode, parentNode.firstChild.nextSibling.nextSibling);
+	      } else if (this.state.listOfAnswers.length == 0) {
+	        noResultNode.parentNode.insertBefore(noResultNode, parentNode.firstChild.nextSibling.nextSibling);
+	      } else {
+	        listOfAnswersNode.parentNode.insertBefore(listOfAnswersNode, parentNode.firstChild.nextSibling.nextSibling);
 	      }
 	    }
 	  }, {
@@ -24438,7 +24475,7 @@
 	      return _react2.default.createElement(
 	        "div",
 	        null,
-	        _react2.default.createElement(_Main2.default, null),
+	        _react2.default.createElement(_Main2.default, { demoType: "text" }),
 	        _react2.default.createElement(
 	          "div",
 	          null,
@@ -24477,10 +24514,10 @@
 	                null,
 	                "Query"
 	              ),
-	              _react2.default.createElement(_SearchBar2.default, { searchWordTrie: this.searchWordTrie.bind(this) }),
+	              _react2.default.createElement(_SearchBar2.default, { searchWordTrie: this.searchWordTrie.bind(this), placeholder: "Suggestion: muhamad" }),
 	              _react2.default.createElement(
 	                "table",
-	                { className: "pure-table", id: "listOfAnswers", style: { marginTop: '20px', visibility: 'hidden' } },
+	                { className: "pure-table", id: "listOfAnswers", style: { visibility: 'hidden' } },
 	                _react2.default.createElement(
 	                  "thead",
 	                  null,
@@ -24504,7 +24541,9 @@
 	                  null,
 	                  listOfAnswers
 	                )
-	              )
+	              ),
+	              _react2.default.createElement(_SearchingStatus2.default, { searchingStatus: this.state.searching }),
+	              _react2.default.createElement(_NoSearchResult2.default, { searchingStatus: this.state.searching, numAnswers: this.state.listOfAnswers.length, query: this.query })
 	            ),
 	            _react2.default.createElement(
 	              "div",
@@ -24935,8 +24974,8 @@
 	        null,
 	        _react2.default.createElement(
 	          "form",
-	          { className: "pure-form", onSubmit: this.props.searchWordTrie },
-	          _react2.default.createElement("input", { type: "text", id: "searchBar", className: "pure-input", style: { marginRight: "10px" } }),
+	          { className: "pure-form", onSubmit: this.props.searchWordTrie, style: { marginBottom: '10px' } },
+	          _react2.default.createElement("input", { type: "text", id: "searchBar", placeholder: this.props.placeholder, className: "pure-input", style: { marginRight: "10px" } }),
 	          _react2.default.createElement("input", { type: "submit", value: "Search", className: "pure-button" })
 	        )
 	      );
@@ -24949,26 +24988,25 @@
 	exports.default = SearchBar;
 
 /***/ },
-/* 213 */,
-/* 214 */
+/* 213 */
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = __webpack_require__(215);
+	module.exports = __webpack_require__(214);
 
 /***/ },
-/* 215 */
+/* 214 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var defaults = __webpack_require__(216);
-	var utils = __webpack_require__(217);
-	var dispatchRequest = __webpack_require__(218);
-	var InterceptorManager = __webpack_require__(227);
-	var isAbsoluteURL = __webpack_require__(228);
-	var combineURLs = __webpack_require__(229);
-	var bind = __webpack_require__(230);
-	var transformData = __webpack_require__(222);
+	var defaults = __webpack_require__(215);
+	var utils = __webpack_require__(216);
+	var dispatchRequest = __webpack_require__(217);
+	var InterceptorManager = __webpack_require__(226);
+	var isAbsoluteURL = __webpack_require__(227);
+	var combineURLs = __webpack_require__(228);
+	var bind = __webpack_require__(229);
+	var transformData = __webpack_require__(221);
 	
 	function Axios(defaultConfig) {
 	  this.defaults = utils.merge({}, defaultConfig);
@@ -25053,7 +25091,7 @@
 	axios.all = function all(promises) {
 	  return Promise.all(promises);
 	};
-	axios.spread = __webpack_require__(231);
+	axios.spread = __webpack_require__(230);
 	
 	// Provide aliases for supported request methods
 	utils.forEach(['delete', 'get', 'head'], function forEachMethodNoData(method) {
@@ -25081,12 +25119,12 @@
 
 
 /***/ },
-/* 216 */
+/* 215 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var utils = __webpack_require__(217);
+	var utils = __webpack_require__(216);
 	
 	var PROTECTION_PREFIX = /^\)\]\}',?\n/;
 	var DEFAULT_CONTENT_TYPE = {
@@ -25153,7 +25191,7 @@
 
 
 /***/ },
-/* 217 */
+/* 216 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -25425,7 +25463,7 @@
 
 
 /***/ },
-/* 218 */
+/* 217 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -25447,10 +25485,10 @@
 	        adapter = config.adapter;
 	      } else if (typeof XMLHttpRequest !== 'undefined') {
 	        // For browsers use XHR adapter
-	        adapter = __webpack_require__(219);
+	        adapter = __webpack_require__(218);
 	      } else if (typeof process !== 'undefined') {
 	        // For node use HTTP adapter
-	        adapter = __webpack_require__(219);
+	        adapter = __webpack_require__(218);
 	      }
 	
 	      if (typeof adapter === 'function') {
@@ -25466,18 +25504,18 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)))
 
 /***/ },
-/* 219 */
+/* 218 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
 	
-	var utils = __webpack_require__(217);
-	var buildURL = __webpack_require__(220);
-	var parseHeaders = __webpack_require__(221);
-	var transformData = __webpack_require__(222);
-	var isURLSameOrigin = __webpack_require__(223);
-	var btoa = (typeof window !== 'undefined' && window.btoa) || __webpack_require__(224);
-	var settle = __webpack_require__(225);
+	var utils = __webpack_require__(216);
+	var buildURL = __webpack_require__(219);
+	var parseHeaders = __webpack_require__(220);
+	var transformData = __webpack_require__(221);
+	var isURLSameOrigin = __webpack_require__(222);
+	var btoa = (typeof window !== 'undefined' && window.btoa) || __webpack_require__(223);
+	var settle = __webpack_require__(224);
 	
 	module.exports = function xhrAdapter(resolve, reject, config) {
 	  var requestData = config.data;
@@ -25576,7 +25614,7 @@
 	  // This is only done if running in a standard browser environment.
 	  // Specifically not if we're in a web worker, or react-native.
 	  if (utils.isStandardBrowserEnv()) {
-	    var cookies = __webpack_require__(226);
+	    var cookies = __webpack_require__(225);
 	
 	    // Add xsrf header
 	    var xsrfValue = config.withCredentials || isURLSameOrigin(config.url) ?
@@ -25637,12 +25675,12 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)))
 
 /***/ },
-/* 220 */
+/* 219 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var utils = __webpack_require__(217);
+	var utils = __webpack_require__(216);
 	
 	function encode(val) {
 	  return encodeURIComponent(val).
@@ -25710,12 +25748,12 @@
 
 
 /***/ },
-/* 221 */
+/* 220 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var utils = __webpack_require__(217);
+	var utils = __webpack_require__(216);
 	
 	/**
 	 * Parse headers into an object
@@ -25753,12 +25791,12 @@
 
 
 /***/ },
-/* 222 */
+/* 221 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var utils = __webpack_require__(217);
+	var utils = __webpack_require__(216);
 	
 	/**
 	 * Transform the data for a request or a response
@@ -25779,12 +25817,12 @@
 
 
 /***/ },
-/* 223 */
+/* 222 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var utils = __webpack_require__(217);
+	var utils = __webpack_require__(216);
 	
 	module.exports = (
 	  utils.isStandardBrowserEnv() ?
@@ -25853,7 +25891,7 @@
 
 
 /***/ },
-/* 224 */
+/* 223 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -25895,7 +25933,7 @@
 
 
 /***/ },
-/* 225 */
+/* 224 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -25919,12 +25957,12 @@
 
 
 /***/ },
-/* 226 */
+/* 225 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var utils = __webpack_require__(217);
+	var utils = __webpack_require__(216);
 	
 	module.exports = (
 	  utils.isStandardBrowserEnv() ?
@@ -25978,12 +26016,12 @@
 
 
 /***/ },
-/* 227 */
+/* 226 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var utils = __webpack_require__(217);
+	var utils = __webpack_require__(216);
 	
 	function InterceptorManager() {
 	  this.handlers = [];
@@ -26036,7 +26074,7 @@
 
 
 /***/ },
-/* 228 */
+/* 227 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -26056,7 +26094,7 @@
 
 
 /***/ },
-/* 229 */
+/* 228 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -26074,7 +26112,7 @@
 
 
 /***/ },
-/* 230 */
+/* 229 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -26091,7 +26129,7 @@
 
 
 /***/ },
-/* 231 */
+/* 230 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -26124,7 +26162,119 @@
 
 
 /***/ },
+/* 231 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _react = __webpack_require__(1);
+	
+	var _react2 = _interopRequireDefault(_react);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var NoSearchResult = function (_React$Component) {
+	  _inherits(NoSearchResult, _React$Component);
+	
+	  function NoSearchResult() {
+	    _classCallCheck(this, NoSearchResult);
+	
+	    return _possibleConstructorReturn(this, Object.getPrototypeOf(NoSearchResult).apply(this, arguments));
+	  }
+	
+	  _createClass(NoSearchResult, [{
+	    key: "render",
+	    value: function render() {
+	      var query = this.props.query;
+	      var visibility = this.props.numAnswers == 0 && this.props.searchingStatus == false ? "visible" : "hidden";
+	      if (query == undefined) visibility = "hidden";
+	      return _react2.default.createElement(
+	        "div",
+	        { id: "noSearchResult" },
+	        _react2.default.createElement(
+	          "p",
+	          { style: { visibility: visibility } },
+	          " No Seach Results for: ",
+	          query,
+	          " "
+	        )
+	      );
+	    }
+	  }]);
+	
+	  return NoSearchResult;
+	}(_react2.default.Component);
+	
+	exports.default = NoSearchResult;
+
+/***/ },
 /* 232 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _react = __webpack_require__(1);
+	
+	var _react2 = _interopRequireDefault(_react);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var LoadingStatus = function (_React$Component) {
+	  _inherits(LoadingStatus, _React$Component);
+	
+	  function LoadingStatus() {
+	    _classCallCheck(this, LoadingStatus);
+	
+	    return _possibleConstructorReturn(this, Object.getPrototypeOf(LoadingStatus).apply(this, arguments));
+	  }
+	
+	  _createClass(LoadingStatus, [{
+	    key: "render",
+	    value: function render() {
+	
+	      var visibility = this.props.searchingStatus == true ? "visible" : "hidden";
+	      var style = {
+	        visibility: visibility
+	      };
+	      return _react2.default.createElement(
+	        "div",
+	        { id: "searchingStatus", style: style },
+	        "Searching ..."
+	      );
+	    }
+	  }]);
+	
+	  return LoadingStatus;
+	}(_react2.default.Component);
+	
+	exports.default = LoadingStatus;
+
+/***/ },
+/* 233 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -26153,13 +26303,21 @@
 	
 	var _SearchBar2 = _interopRequireDefault(_SearchBar);
 	
-	var _axios = __webpack_require__(214);
+	var _axios = __webpack_require__(213);
 	
 	var _axios2 = _interopRequireDefault(_axios);
 	
 	var _Main = __webpack_require__(208);
 	
 	var _Main2 = _interopRequireDefault(_Main);
+	
+	var _NoSearchResult = __webpack_require__(231);
+	
+	var _NoSearchResult2 = _interopRequireDefault(_NoSearchResult);
+	
+	var _SearchingStatus = __webpack_require__(232);
+	
+	var _SearchingStatus2 = _interopRequireDefault(_SearchingStatus);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
@@ -26178,7 +26336,8 @@
 	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(VideoApp).call(this, props));
 	
 	    _this.state = {
-	      listOfAnswers: []
+	      listOfAnswers: [],
+	      searching: false
 	    };
 	    return _this;
 	  }
@@ -26188,26 +26347,33 @@
 	    value: function searchWordTrie(event) {
 	      var _this2 = this;
 	
-	      console.log("INSIDEJ");
 	      event.preventDefault();
-	      var query = document.getElementById("searchBar").value;
+	      this.query = document.getElementById("searchBar").value;
+	      this.setState({ searching: true });
 	
-	      if (query != "") {
-	        query = query.toUpperCase();
-	        _axios2.default.get('http://46.101.123.73:8080/video_search/' + '?query=' + query).then(function (response) {
-	          console.log("WORKING");
-	          console.log(response);
+	      if (this.query != "") {
+	        _axios2.default.get('http://46.101.123.73:8080/video_search/' + '?query=' + this.query.toUpperCase()).then(function (response) {
 	
 	          var filteredWords = response.data.filter(function (wordObj) {
-	            return wordObj.cost < 3;
+	            return wordObj.cost < 6;
 	          }).map(function (wordObj) {
 	            return wordObj.wordId;
 	          });
-	          console.log("filteredWords:", filteredWords);
 	
 	          _this2.setState({
+	            searching: false,
 	            listOfAnswers: filteredWords
 	          });
+	        }).catch(function (response) {
+	          _this2.setState({
+	            searching: false,
+	            listOfAnswers: []
+	          });
+	        });
+	      } else {
+	        this.setState({
+	          searching: false,
+	          listOfAnswers: []
 	        });
 	      }
 	    }
@@ -26235,6 +26401,21 @@
 	      }
 	    }
 	  }, {
+	    key: "componentDidUpdate",
+	    value: function componentDidUpdate() {
+	      var searchingNode = document.getElementById("searchingStatus");
+	      var noResultNode = document.getElementById("noSearchResult");
+	      var listOfAnswersNode = document.getElementById("listOfAnswers");
+	      var parentNode = searchingNode.parentNode;
+	      if (this.state.searching == true) {
+	        searchingNode.parentNode.insertBefore(searchingNode, parentNode.firstChild.nextSibling.nextSibling);
+	      } else if (this.state.listOfAnswers.length == 0) {
+	        noResultNode.parentNode.insertBefore(noResultNode, parentNode.firstChild.nextSibling.nextSibling);
+	      } else {
+	        listOfAnswersNode.parentNode.insertBefore(listOfAnswersNode, parentNode.firstChild.nextSibling.nextSibling);
+	      }
+	    }
+	  }, {
 	    key: "render",
 	    value: function render() {
 	      var _this4 = this;
@@ -26258,17 +26439,21 @@
 	        };
 	        return _react2.default.createElement(
 	          "li",
-	          { onClick: onClick, style: { color: "blue", textDecoration: "underline" } },
-	          minutes,
-	          ":",
-	          seconds
+	          { onClick: onClick },
+	          _react2.default.createElement(
+	            "a",
+	            { href: "#" },
+	            minutes,
+	            ":",
+	            seconds
+	          )
 	        );
 	      });
 	
 	      return _react2.default.createElement(
 	        "div",
 	        null,
-	        _react2.default.createElement(_Main2.default, null),
+	        _react2.default.createElement(_Main2.default, { demoType: "video" }),
 	        _react2.default.createElement(
 	          "div",
 	          null,
@@ -26307,12 +26492,18 @@
 	                { style: { marginTop: '0px' } },
 	                "Query"
 	              ),
-	              _react2.default.createElement(_SearchBar2.default, { searchWordTrie: this.searchWordTrie.bind(this) }),
+	              _react2.default.createElement(_SearchBar2.default, { searchWordTrie: this.searchWordTrie.bind(this), placeholder: "Suggestion: Driving" }),
 	              _react2.default.createElement(
-	                "ul",
-	                null,
-	                answers
-	              )
+	                "div",
+	                { id: "listOfAnswers" },
+	                _react2.default.createElement(
+	                  "ul",
+	                  null,
+	                  answers
+	                )
+	              ),
+	              _react2.default.createElement(_SearchingStatus2.default, { searchingStatus: this.state.searching }),
+	              _react2.default.createElement(_NoSearchResult2.default, { searchingStatus: this.state.searching, numAnswers: this.state.listOfAnswers.length, query: this.query })
 	            ),
 	            _react2.default.createElement(
 	              "div",
@@ -26331,7 +26522,7 @@
 	exports.default = VideoApp;
 
 /***/ },
-/* 233 */
+/* 234 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
