@@ -24344,7 +24344,8 @@
 	    _this.state = {
 	      listOfIdsAndWords: {},
 	      listOfAnswers: [],
-	      searching: false
+	      searching: false,
+	      oneSearchPerformed: false
 	    };
 	
 	    _this.firebaseRef.on("child_added", function (snapshot) {
@@ -24377,11 +24378,11 @@
 	    value: function searchWordTrie(event) {
 	      var _this3 = this;
 	
+	      event.preventDefault();
 	      this.query = document.getElementById("searchBar").value;
-	      this.setState({ searching: true });
+	      this.setState({ searching: true, oneSearchPerformed: true });
 	
 	      if (this.query != "") {
-	
 	        _axios2.default.get('http://46.101.123.73:8080/word_search/' + '?query=' + this.query.toUpperCase()).then(function (response) {
 	          var filteredWords = response.data.filter(function (wordObj) {
 	            return wordObj.cost < 3;
@@ -24406,8 +24407,6 @@
 	          listOfAnswers: []
 	        });
 	      }
-	
-	      event.preventDefault();
 	    }
 	  }, {
 	    key: "componentDidUpdate",
@@ -24425,9 +24424,9 @@
 	      var parentNode = searchingNode.parentNode;
 	      if (this.state.searching == true) {
 	        searchingNode.parentNode.insertBefore(searchingNode, parentNode.firstChild.nextSibling.nextSibling);
-	      } else if (this.state.listOfAnswers.length == 0) {
+	      } else if (this.state.listOfAnswers.length == 0 && this.state.oneSearchPerformed == true) {
 	        noResultNode.parentNode.insertBefore(noResultNode, parentNode.firstChild.nextSibling.nextSibling);
-	      } else {
+	      } else if (this.state.oneSearchPerformed == true) {
 	        listOfAnswersNode.parentNode.insertBefore(listOfAnswersNode, parentNode.firstChild.nextSibling.nextSibling);
 	      }
 	    }
@@ -24536,7 +24535,7 @@
 	                "Query"
 	              ),
 	              _react2.default.createElement(_SearchBar2.default, { searchWordTrie: this.searchWordTrie.bind(this) }),
-	              _react2.default.createElement(_SuggestedQuery2.default, { suggestedQuery: "MUHAMED", searchWordTrie: this.searchWordTrie.bind(this) }),
+	              _react2.default.createElement(_SuggestedQuery2.default, { suggestedQueries: ["MUHAMED", "Wahid"], searchWordTrie: this.searchWordTrie.bind(this) }),
 	              _react2.default.createElement(
 	                "table",
 	                { className: "pure-table", id: "listOfAnswers", style: { visibility: 'hidden' } },
@@ -26375,7 +26374,6 @@
 	      var _this2 = this;
 	
 	      event.preventDefault();
-	      console.log(event.target.value);
 	      this.query = document.getElementById("searchBar").value;
 	      this.setState({ searching: true });
 	
@@ -26524,7 +26522,7 @@
 	                "Query"
 	              ),
 	              _react2.default.createElement(_SearchBar2.default, { searchWordTrie: this.searchWordTrie.bind(this) }),
-	              _react2.default.createElement(_SuggestedQuery2.default, { suggestedQuery: "Driving", searchWordTrie: this.searchWordTrie.bind(this) }),
+	              _react2.default.createElement(_SuggestedQuery2.default, { suggestedQueries: ["Driving", "Confident", "Interview"], searchWordTrie: this.searchWordTrie.bind(this) }),
 	              _react2.default.createElement(
 	                "div",
 	                { id: "listOfAnswers" },
@@ -26589,46 +26587,64 @@
 	var SuggestedQuery = function (_React$Component) {
 	  _inherits(SuggestedQuery, _React$Component);
 	
-	  function SuggestedQuery() {
+	  function SuggestedQuery(props) {
 	    _classCallCheck(this, SuggestedQuery);
 	
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(SuggestedQuery).apply(this, arguments));
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(SuggestedQuery).call(this, props));
+	
+	    _this.state = {
+	      suggestedQueries: _this.props.suggestedQueries
+	    };
+	    return _this;
 	  }
 	
 	  _createClass(SuggestedQuery, [{
+	    key: "onClick",
+	    value: function onClick(event, suggestedQuery) {
+	      document.getElementById("searchBar").value = suggestedQuery;
+	      var oneLessQuery = this.state.suggestedQueries;
+	
+	      oneLessQuery.splice(oneLessQuery.indexOf(suggestedQuery), 1);
+	
+	      if (oneLessQuery.length == 0) {
+	        document.getElementById("suggestedQueryLine").style.visibility = "hidden";
+	      }
+	
+	      this.setState({
+	        suggestedQueries: oneLessQuery
+	      });
+	
+	      this.props.searchWordTrie(event);
+	    }
+	  }, {
 	    key: "render",
 	    value: function render() {
 	      var _this2 = this;
 	
-	      var suggestedQuery = this.props.suggestedQuery;
-	
-	      var onClick = function onClick(event) {
-	        document.getElementById("searchBar").value = suggestedQuery;
-	        document.getElementById("suggestedQuery").style.visibility = "hidden";
-	        _this2.props.searchWordTrie(event);
-	      };
+	      var suggestedQueries = this.state.suggestedQueries.map(function (suggestedQuery) {
+	        return _react2.default.createElement(
+	          "span",
+	          { id: suggestedQuery },
+	          " ",
+	          _react2.default.createElement(
+	            "a",
+	            { onClick: function onClick(event) {
+	                return _this2.onClick(event, suggestedQuery);
+	              }, href: "#" },
+	            suggestedQuery
+	          )
+	        );
+	      });
 	
 	      return _react2.default.createElement(
 	        "div",
-	        { id: "suggestedQuery" },
+	        { id: "suggestedQueryLine" },
 	        _react2.default.createElement(
 	          "span",
 	          null,
 	          " Suggested Query: "
 	        ),
-	        _react2.default.createElement(
-	          "span",
-	          { onClick: onClick },
-	          " ",
-	          _react2.default.createElement(
-	            "a",
-	            { href: "#" },
-	            " ",
-	            suggestedQuery,
-	            " "
-	          ),
-	          " "
-	        )
+	        suggestedQueries
 	      );
 	    }
 	  }]);
