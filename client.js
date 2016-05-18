@@ -24217,6 +24217,15 @@
 	        margin: '10px'
 	      };
 	
+	      var button = {
+	        backgroundColor: '#008CBA', /* Green */
+	        border: 'none',
+	        color: 'white',
+	        textAlign: 'center',
+	        textDecoration: 'none',
+	        padding: '12px 20px'
+	      };
+	
 	      var demoType = this.props.demoType;
 	
 	      return _react2.default.createElement(
@@ -24235,12 +24244,20 @@
 	          _react2.default.createElement(
 	            _reactRouter.Link,
 	            { style: link, to: '/video' },
-	            'Video Search'
+	            _react2.default.createElement(
+	              'button',
+	              { style: button },
+	              ' Video Search '
+	            )
 	          ),
 	          _react2.default.createElement(
 	            _reactRouter.Link,
 	            { style: link, to: '/text' },
-	            'Text Search'
+	            _react2.default.createElement(
+	              'button',
+	              { style: button },
+	              ' Text Search '
+	            )
 	          )
 	        ),
 	        _react2.default.createElement(
@@ -24302,6 +24319,10 @@
 	var _SearchingStatus = __webpack_require__(232);
 	
 	var _SearchingStatus2 = _interopRequireDefault(_SearchingStatus);
+	
+	var _SuggestedQuery = __webpack_require__(235);
+	
+	var _SuggestedQuery2 = _interopRequireDefault(_SuggestedQuery);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
@@ -24372,7 +24393,7 @@
 	            searching: false,
 	            listOfAnswers: filteredWords
 	          });
-	        }).catch(function (reponse) {
+	        }).catch(function (response) {
 	          _this3.setState({
 	            searching: false,
 	            listOfAnswers: []
@@ -24514,7 +24535,8 @@
 	                null,
 	                "Query"
 	              ),
-	              _react2.default.createElement(_SearchBar2.default, { searchWordTrie: this.searchWordTrie.bind(this), placeholder: "Suggestion: muhamad" }),
+	              _react2.default.createElement(_SearchBar2.default, { searchWordTrie: this.searchWordTrie.bind(this) }),
+	              _react2.default.createElement(_SuggestedQuery2.default, { suggestedQuery: "MUHAMED", searchWordTrie: this.searchWordTrie.bind(this) }),
 	              _react2.default.createElement(
 	                "table",
 	                { className: "pure-table", id: "listOfAnswers", style: { visibility: 'hidden' } },
@@ -26260,6 +26282,7 @@
 	      var style = {
 	        visibility: visibility
 	      };
+	
 	      return _react2.default.createElement(
 	        "div",
 	        { id: "searchingStatus", style: style },
@@ -26319,6 +26342,10 @@
 	
 	var _SearchingStatus2 = _interopRequireDefault(_SearchingStatus);
 	
+	var _SuggestedQuery = __webpack_require__(235);
+	
+	var _SuggestedQuery2 = _interopRequireDefault(_SuggestedQuery);
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -26348,6 +26375,7 @@
 	      var _this2 = this;
 	
 	      event.preventDefault();
+	      console.log(event.target.value);
 	      this.query = document.getElementById("searchBar").value;
 	      this.setState({ searching: true });
 	
@@ -26434,6 +26462,9 @@
 	      var answers = this.state.listOfAnswers.map(function (ans) {
 	        var minutes = Math.floor(ans / 60);
 	        var seconds = ans % 60;
+	        if (seconds < 10) {
+	          seconds = '0' + seconds;
+	        }
 	        var onClick = function onClick() {
 	          _this4.player.seekTo(ans);
 	        };
@@ -26492,7 +26523,8 @@
 	                { style: { marginTop: '0px' } },
 	                "Query"
 	              ),
-	              _react2.default.createElement(_SearchBar2.default, { searchWordTrie: this.searchWordTrie.bind(this), placeholder: "Suggestion: Driving" }),
+	              _react2.default.createElement(_SearchBar2.default, { searchWordTrie: this.searchWordTrie.bind(this) }),
+	              _react2.default.createElement(_SuggestedQuery2.default, { suggestedQuery: "Driving", searchWordTrie: this.searchWordTrie.bind(this) }),
 	              _react2.default.createElement(
 	                "div",
 	                { id: "listOfAnswers" },
@@ -26529,6 +26561,82 @@
 	
 	module.exports = __webpack_require__(3);
 
+
+/***/ },
+/* 235 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _react = __webpack_require__(1);
+	
+	var _react2 = _interopRequireDefault(_react);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var SuggestedQuery = function (_React$Component) {
+	  _inherits(SuggestedQuery, _React$Component);
+	
+	  function SuggestedQuery() {
+	    _classCallCheck(this, SuggestedQuery);
+	
+	    return _possibleConstructorReturn(this, Object.getPrototypeOf(SuggestedQuery).apply(this, arguments));
+	  }
+	
+	  _createClass(SuggestedQuery, [{
+	    key: "render",
+	    value: function render() {
+	      var _this2 = this;
+	
+	      var suggestedQuery = this.props.suggestedQuery;
+	
+	      var onClick = function onClick(event) {
+	        document.getElementById("searchBar").value = suggestedQuery;
+	        document.getElementById("suggestedQuery").style.visibility = "hidden";
+	        _this2.props.searchWordTrie(event);
+	      };
+	
+	      return _react2.default.createElement(
+	        "div",
+	        { id: "suggestedQuery" },
+	        _react2.default.createElement(
+	          "span",
+	          null,
+	          " Suggested Query: "
+	        ),
+	        _react2.default.createElement(
+	          "span",
+	          { onClick: onClick },
+	          " ",
+	          _react2.default.createElement(
+	            "a",
+	            { href: "#" },
+	            " ",
+	            suggestedQuery,
+	            " "
+	          ),
+	          " "
+	        )
+	      );
+	    }
+	  }]);
+	
+	  return SuggestedQuery;
+	}(_react2.default.Component);
+	
+	exports.default = SuggestedQuery;
 
 /***/ }
 /******/ ]);
